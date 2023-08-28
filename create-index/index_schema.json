@@ -1,0 +1,149 @@
+{
+    "name": "cartas-coordinador",
+    "fields": [
+      {
+        "name": "id",
+        "type": "Edm.String",
+        "facetable": false,
+        "filterable": false,
+        "key": true,
+        "retrievable": true,
+        "searchable": true,
+        "sortable": false,
+        "analyzer": "standard.lucene",
+        "indexAnalyzer": null,
+        "searchAnalyzer": null,
+        "synonymMaps": [],
+        "fields": []
+      },
+      {
+        "name": "filename",
+        "type": "Edm.String",
+        "facetable": false,
+        "filterable": false,
+        "retrievable": true,
+        "sortable": false,
+        "analyzer": null,
+        "indexAnalyzer": null,
+        "searchAnalyzer": null,
+        "synonymMaps": [],
+        "fields": []
+      },
+      {
+        "name": "author",
+        "type": "Edm.String",
+        "facetable": true,
+        "filterable": false,
+        "retrievable": true,
+        "sortable": false,
+        "analyzer": null,
+        "indexAnalyzer": null,
+        "searchAnalyzer": null,
+        "synonymMaps": [],
+        "fields": []
+      },
+      {
+        "name": "created_date",
+        "type": "Edm.DateTimeOffset",
+        "facetable": false,
+        "filterable": false,
+        "retrievable": true,
+        "sortable": false,
+        "analyzer": null,
+        "indexAnalyzer": null,
+        "searchAnalyzer": null,
+        "synonymMaps": [],
+        "fields": []
+      },
+      {
+        "name": "last_modified_date",
+        "type": "Edm.DateTimeOffset",
+        "facetable": false,
+        "filterable": false,
+        "retrievable": true,
+        "sortable": false,
+        "analyzer": null,
+        "indexAnalyzer": null,
+        "searchAnalyzer": null,
+        "synonymMaps": [],
+        "fields": []
+      },
+      {
+        "name": "page_number",
+        "type": "Edm.Int32",
+        "facetable": false,
+        "filterable": false,
+        "retrievable": true,
+        "sortable": false,
+        "analyzer": null,
+        "indexAnalyzer": null,
+        "searchAnalyzer": null,
+        "synonymMaps": [],
+        "fields": []
+      },
+      {
+        "name": "total_pages",
+        "type": "Edm.Int32",
+        "facetable": false,
+        "filterable": false,
+        "retrievable": true,
+        "sortable": false,
+        "analyzer": null,
+        "indexAnalyzer": null,
+        "searchAnalyzer": null,
+        "synonymMaps": [],
+        "fields": []
+      },
+      {
+        "name": "content",
+        "type": "Edm.String",
+        "facetable": false,
+        "filterable": false,
+        "retrievable": true,
+        "sortable": false,
+        "analyzer": "standard.lucene",
+        "indexAnalyzer": null,
+        "searchAnalyzer": null,
+        "synonymMaps": [],
+        "fields": []
+      },
+      {
+        "name": "embeddings",
+        "type": "Collection(Edm.Single)",
+        "facetable": false,
+        "filterable": false,
+        "retrievable": true,
+        "sortable": false,
+        "analyzer": "standard.lucene",
+        "indexAnalyzer": null,
+        "searchAnalyzer": null,
+        "synonymMaps": [],
+        "fields": [],
+        "vector_search_dimensions": 1536
+      }
+    ],
+    "suggesters": [
+      {
+        "name": "sg",
+        "searchMode": "analyzingInfixMatching",
+        "sourceFields": [
+          "author",
+          "filename"
+        ]
+      }
+    ],
+    "scoringProfiles": [],
+    "defaultScoringProfile": "",
+    "corsOptions": {
+      "allowedOrigins": [
+        "*"
+      ],
+      "maxAgeInSeconds": 300
+    },
+    "analyzers": [],
+    "charFilters": [],
+    "tokenFilters": [],
+    "tokenizers": [],
+    "encryptionKey": null
+  }
+  
