@@ -85,14 +85,50 @@ def generate_text(prompt, model=gpt4_model, messages=[], max_tokens=600, tempera
     return response
 
 # Azure Search API
-def vector_search(search_client, user_query, k):
-    # Pure Vector Search
-    vector = Vector(value=generate_embeddings(user_query), k=k, fields="embeddings")
-    results = search_client.search(
-        search_text=None,  
-        vectors= [vector],
-        select=[],
-    )
+def azure_search(search_client, user_query, k, search_type='simple'):
+    # Simple Search
+    if search_type == 'simple':
+        results = search_client.search(
+            search_text=user_query,  
+            select=[],
+        )
+
+    # Semantic Search
+    elif search_type == 'semantic':
+        results = search_client.search(
+            query_type='semantic', 
+            query_language='es-es', 
+            semantic_configuration_name=search_semantic_config_name,
+            search_text=user_query,
+            select=[], 
+            query_caption='extractive'
+        )
+
+    # Simple + Vector Search
+    elif search_type == 'simple_vector':
+        vector = Vector(value=generate_embeddings(user_query), k=k, fields="embeddings")
+        results = search_client.search(
+            search_text=user_query,  
+            vectors= [vector],
+            select=[],
+        )
+
+    # Semantic + Vector Search
+    elif search_type == 'semantic_vector':
+        vector = Vector(value=generate_embeddings(user_query), k=k, fields="embeddings")
+        results = search_client.search(
+            query_type='semantic', 
+            query_language='es-es', 
+            semantic_configuration_name=search_semantic_config_name,
+            search_text=user_query,
+            vectors= [vector],
+            select=[], 
+            query_caption='extractive'
+        )
+
+    else:
+        raise Exception('Invalid search type. Valid options are: simple, semantic, simple_vector, semantic_vector')
+
     _results = []
     for result in results:
         _results.append(
@@ -106,7 +142,7 @@ def vector_search(search_client, user_query, k):
             }
         )
         print(f"\n\nScore: {result['@search.score']}\nRe-ranker Score: {result['@search.reranker_score']}\nKey: {result['id']}\nFilename: {result['filename']}\nPage: {result['page_number']}")
-    return _results
+    return _results[:k]
 
 ###############################################################
 ##################### Streamlit App ###########################
@@ -141,7 +177,7 @@ if user_input := st.chat_input():
     
     # Get Client for search and get relevant documents
     search_client = st.session_state.search_client
-    relevant_docs = vector_search(search_client, user_input, k=2)
+    relevant_docs = azure_search(search_client, user_input, k=2, search_type='semantic_vector')
     
     # Prepare prompt
     system_message = "You are trying to answer the [QUESTION] from the user. Based only in the [CONTEXT] information and the conversation history, create a high-quality answer to the user's question. Be brief and precise. Remember to cite your sources. Answer in Spanish."
