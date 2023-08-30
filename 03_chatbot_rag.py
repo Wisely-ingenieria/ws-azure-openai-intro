@@ -84,6 +84,7 @@ def azure_search(search_client, user_query, k, search_type='simple'):
         results = search_client.search(
             search_text=user_query,  
             select=[],
+            top=k
         )
 
     # Semantic Search
@@ -94,7 +95,8 @@ def azure_search(search_client, user_query, k, search_type='simple'):
             semantic_configuration_name=search_semantic_config_name,
             search_text=user_query,
             select=[], 
-            query_caption='extractive'
+            query_caption='extractive',
+            top=k
         )
 
     # Simple + Vector Search
@@ -104,6 +106,7 @@ def azure_search(search_client, user_query, k, search_type='simple'):
             search_text=user_query,  
             vectors= [vector],
             select=[],
+            top=k
         )
 
     # Semantic + Vector Search
@@ -116,7 +119,8 @@ def azure_search(search_client, user_query, k, search_type='simple'):
             search_text=user_query,
             vectors= [vector],
             select=[], 
-            query_caption='extractive'
+            query_caption='extractive',
+            top=k
         )
 
     else:
@@ -135,8 +139,8 @@ def azure_search(search_client, user_query, k, search_type='simple'):
                 "page": result["page_number"]
             }
         )
-        print(f"Score: {result['@search.score']:.4f} | Re-ranker Score: {result['@search.reranker_score']:.4f} | Filename: {result['filename']} | Page: {result['page_number']}")
-    return _results[:k]
+        print(f"Score: {result['@search.score']} | Re-ranker Score: {result['@search.reranker_score']} | Filename: {result['filename']} | Page: {result['page_number']}")
+    return _results
 
 ###############################################################
 ##################### Streamlit App ###########################
@@ -153,7 +157,7 @@ st.title('🤖 Wisely - Chatbot with Data')
 
 # Model selection
 model_options = [gpt35_model, gpt35_16k_model, gpt4_model, gpt4_32k_model]
-selected_model = st.sidebar.selectbox("Select Model for Text Generation", model_options, index=2)
+selected_model = st.sidebar.selectbox("Select Model for Text Generation", model_options, index=0)
 
 # Temperature
 temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=2.0, value=0.7, step=0.1)
