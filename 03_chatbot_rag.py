@@ -20,6 +20,7 @@ embedding_model = os.getenv("OPENAI_EMBEDDING_MODEL")
 gpt35_model = os.getenv("OPENAI_GPT35_MODEL")
 gpt35_16k_model = os.getenv("OPENAI_GPT35_16K_MODEL")
 gpt4_model = os.getenv("OPENAI_GPT4_MODEL")
+gpt4_32k_model = os.getenv("OPENAI_GPT4_32K_MODEL")
 
 # Azure Search API
 search_service_name = os.getenv("SEARCH_SERVICE_NAME")
@@ -59,6 +60,7 @@ def generate_text(prompt, model=gpt4_model, messages=[], max_tokens=600, tempera
     _messages.extend(messages)
     _messages.append({"role": "user", "content": prompt})
     
+    print("\n\n============================ PROMPT ============================\n")
     for message in _messages:
         print(f"{message['role']}: {message['content']}")
         
@@ -72,6 +74,7 @@ def generate_text(prompt, model=gpt4_model, messages=[], max_tokens=600, tempera
         presence_penalty=presence_penalty,
         stop=stop
     )
+    print(response["choices"][0]["message"]["content"])
     return response
 
 # Azure Search API
@@ -119,6 +122,7 @@ def azure_search(search_client, user_query, k, search_type='simple'):
     else:
         raise Exception('Invalid search type. Valid options are: simple, semantic, simple_vector, semantic_vector')
 
+    print("\n\n============================ SEARCH RESULTS ============================\n")
     _results = []
     for result in results:
         _results.append(
@@ -131,7 +135,7 @@ def azure_search(search_client, user_query, k, search_type='simple'):
                 "page": result["page_number"]
             }
         )
-        print(f"\n\nScore: {result['@search.score']}\nRe-ranker Score: {result['@search.reranker_score']}\nKey: {result['id']}\nFilename: {result['filename']}\nPage: {result['page_number']}")
+        print(f"Score: {result['@search.score']:.4f} | Re-ranker Score: {result['@search.reranker_score']:.4f} | Filename: {result['filename']} | Page: {result['page_number']}")
     return _results[:k]
 
 ###############################################################
@@ -146,6 +150,23 @@ def add_message(role, content):
 # Set page title
 st.set_page_config(page_title="🤖 Wisely - Chatbot with Data")
 st.title('🤖 Wisely - Chatbot with Data')
+
+# Model selection
+model_options = [gpt35_model, gpt35_16k_model, gpt4_model, gpt4_32k_model]
+selected_model = st.sidebar.selectbox("Select Model for Text Generation", model_options, index=2)
+
+# Temperature
+temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=2.0, value=0.7, step=0.1)
+
+# Max tokens
+max_tokens = st.sidebar.slider("Max Tokens", min_value=500, max_value=2000, value=600, step=50)
+
+# Search type
+search_type_options = ['simple', 'semantic', 'simple_vector', 'semantic_vector']
+selected_search_type = st.sidebar.selectbox("Select Search Type", search_type_options, index=3)
+
+# Top results
+top_results = st.sidebar.slider("Top Results", min_value=1, max_value=10, value=2)
 
 # Create welcome message
 if "messages" not in st.session_state:
@@ -167,7 +188,7 @@ if user_input := st.chat_input():
     
     # Get Client for search and get relevant documents
     search_client = st.session_state.search_client
-    relevant_docs = azure_search(search_client, user_input, k=2, search_type='semantic_vector')
+    relevant_docs = azure_search(search_client, user_input, k=top_results, search_type=selected_search_type)
     
     # Prepare prompt
     system_message = "You are trying to answer the [QUESTION] from the user. Based only in the [CONTEXT] information and the conversation history, create a high-quality answer to the user's question. Be brief and precise. Remember to cite your sources. Answer in Spanish."
@@ -178,5 +199,5 @@ if user_input := st.chat_input():
     _messages.extend(st.session_state.messages)
     
     # Generate answer and add to chat
-    answer = generate_text(prompt, messages=_messages)
+    answer = generate_text(prompt, messages=_messages, model=selected_model, max_tokens=max_tokens, temperature=temperature)
     add_message("assistant", answer["choices"][0]["message"]["content"])
