@@ -160,7 +160,7 @@ model_options = [gpt35_model, gpt35_16k_model, gpt4_model, gpt4_32k_model]
 selected_model = st.sidebar.selectbox("Select Model for Text Generation", model_options, index=0)
 
 # Temperature
-temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=2.0, value=0.7, step=0.1)
+temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.7, step=0.1)
 
 # Max tokens
 max_tokens = st.sidebar.slider("Max Tokens", min_value=500, max_value=2000, value=600, step=50)
