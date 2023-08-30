@@ -20,10 +20,6 @@ embedding_model = os.getenv("OPENAI_EMBEDDING_MODEL")
 gpt35_model = os.getenv("OPENAI_GPT35_MODEL")
 gpt35_16k_model = os.getenv("OPENAI_GPT35_16K_MODEL")
 gpt4_model = os.getenv("OPENAI_GPT4_MODEL")
-print("OpenAI API key: {}".format(openai.api_key[:5] + '...' + openai.api_key[-5:]))
-print("OpenAI API base: {}".format(openai.api_base))
-print("OpenAI API version: {}".format(openai.api_version))
-print("OpenAI API type: {}".format(openai.api_type))
 
 # Azure Search API
 search_service_name = os.getenv("SEARCH_SERVICE_NAME")
@@ -32,12 +28,6 @@ search_index_name = os.getenv("SEARCH_INDEX_NAME")
 search_endpoint = "https://{}.search.windows.net/".format(search_service_name)
 search_vector_config_name = os.getenv("SEARCH_VECTOR_CONFIG_NAME")
 search_semantic_config_name = os.getenv("SEARCH_SEMANTIC_CONFIG_NAME")
-print("Azure Search service name: {}".format(search_service_name))
-print("Azure Search service key: {}".format(search_service_key[:5] + '...' + search_service_key[-5:]))
-print("Azure Search index name: {}".format(search_index_name))
-print("Azure Search endpoint: {}".format(search_endpoint))
-print("Azure Search vector config name: {}".format(search_vector_config_name))
-print("Azure Search semantic config name: {}".format(search_semantic_config_name))
 
 # Instantiate a client
 class CreateClient(object):
